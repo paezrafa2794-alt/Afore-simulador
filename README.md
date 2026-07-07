@@ -1,0 +1,2 @@
+# Afore-simulador
+Afore simulador
