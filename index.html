@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AFORE Simulador — IMSS Ley 97</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & TOKENS ========== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* Fondo blanco institucional */
+  --bg:#FFFFFF;
+  --bg-off:#F5F7FA;
+  --bg-panel:#FFFFFF;
+  --bg-subtle:#EEF1F5;
+
+  /* Verde IMSS / SAR */
+  --green-dark:#004A2F;
+  --green:#006B44;
+  --green-mid:#00894F;
+  --green-bright:#00A65A;
+  --green-light:#D4F0E3;
+
+  /* Rojo — alerta / descuento */
+  --red-dark:#7A0000;
+  --red:#B00020;
+  --red-bright:#D32F2F;
+  --red-alert:#FF1744;
+  --red-light:#FDECEA;
+
+  /* Dorado — saldo AFORE / positivo */
+  --gold-dark:#7A5200;
+  --gold:#B8860B;
+  --gold-bright:#D4A017;
+  --gold-light:#FFF8E1;
+
+  /* Azul SAR / CONSAR */
+  --blue-dark:#003366;
+  --blue:#004A9F;
+  --blue-bright:#1565C0;
+  --blue-light:#E3EAF5;
+
+  /* Gris neutros */
+  --gray-900:#111827;
+  --gray-700:#374151;
+  --gray-500:#6B7280;
+  --gray-300:#D1D5DB;
+  --gray-100:#F3F4F6;
+  --gray-50:#FAFAFA;
+
+  /* Bordes y sombras */
+  --border:#E2E6EA;
+  --border-strong:#CBD0D8;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 10px 30px rgba(0,0,0,0.12),0 4px 8px rgba(0,0,0,0.06);
+
+  --raised:0 2px 0 rgba(0,74,47,0.4),0 4px 8px rgba(0,0,0,0.12);
+  --border-green:2px solid var(--green);
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--gray-900);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.hidden{display:none!important}
+
+/* ========== COVER ========== */
+#cover{
+  position:fixed;inset:0;
+  background:linear-gradient(160deg,#FFFFFF 0%,#F0F4F8 40%,#E8F4EF 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:300;overflow:hidden;
+}
+.cover-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(var(--gray-100) 1px,transparent 1px),
+    linear-gradient(90deg,var(--gray-100) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.cover-accent-bar{
+  position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,var(--red-bright) 33%,var(--bg) 33%,var(--bg) 66%,var(--green) 66%);
+}
+.cover-logo-area{
+  position:relative;z-index:10;text-align:center;padding:24px 28px;max-width:460px;width:100%;
+}
+.cover-institution{
+  font-family:'Press Start 2P',monospace;
+  font-size:6px;letter-spacing:3px;
+  color:var(--gray-500);text-transform:uppercase;
+  margin-bottom:20px;
+}
+.cover-emblem{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+  box-shadow:0 4px 16px rgba(0,74,47,0.3);
+  font-size:32px;
+}
+.cover-title{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(26px,7vw,44px);
+  font-weight:800;
+  color:var(--gray-900);
+  letter-spacing:-1px;
+  line-height:1.05;
+  margin-bottom:6px;
+}
+.cover-title span{color:var(--green)}
+.cover-badge{
+  display:inline-block;
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  background:var(--green-light);color:var(--green-dark);
+  border:1px solid var(--green-bright);
+  padding:4px 10px;margin:10px 0 16px;letter-spacing:1px;
+}
+.cover-desc{
+  font-size:13px;color:var(--gray-500);
+  line-height:1.7;margin-bottom:28px;
+}
+.btn-cover{
+  font-family:'Press Start 2P',monospace;
+  font-size:9px;letter-spacing:1px;
+  padding:14px 28px;
+  background:var(--green);
+  color:#FFFFFF;
+  border:none;cursor:pointer;
+  box-shadow:0 4px 0 var(--green-dark),0 6px 16px rgba(0,74,47,0.3);
+  text-transform:uppercase;
+  transition:all .1s;
+  clip-path:polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+}
+.btn-cover:hover{background:var(--green-mid);transform:translateY(-2px);box-shadow:0 6px 0 var(--green-dark)}
+.btn-cover:active{transform:translateY(2px);box-shadow:0 2px 0 var(--green-dark)}
+.cover-legal{
+  font-size:10px;color:var(--gray-300);
+  margin-top:16px;letter-spacing:.5px;
+}
+
+/* ========== ONBOARDING ========== */
+#onboarding{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+.ob-head{
+  background:var(--green-dark);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ob-brand{
+  font-family:'Press Start 2P',monospace;font-size:9px;
+  color:#FFFFFF;letter-spacing:1px;
+}
+.ob-era{
+  font-family:'Press Start 2P',monospace;
+  font-size:6px;color:rgba(255,255,255,0.6);letter-spacing:1px;
+}
+.ob-progress-wrap{padding:12px 20px;background:var(--bg-off);border-bottom:1px solid var(--border)}
+.ob-progress-label{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--gray-500);letter-spacing:2px;margin-bottom:8px;
+}
+.ob-steps{display:flex;gap:4px}
+.ob-step{
+  flex:1;height:6px;background:var(--gray-200);
+  border-radius:3px;overflow:hidden;
+}
+.ob-step.done{background:var(--green-bright)}
+.ob-step.active{background:var(--blue-bright)}
+.ob-body{flex:1;padding:24px 20px;overflow-y:auto}
+.ob-section-tag{
+  font-family:'Press Start 2P',monospace;
+  font-size:6px;color:var(--blue-bright);letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.ob-h{
+  font-size:22px;font-weight:700;
+  color:var(--gray-900);line-height:1.2;margin-bottom:4px;
+}
+.ob-sh{font-size:12px;color:var(--gray-500);margin-bottom:24px}
+.ob-field{margin-bottom:20px}
+.ob-label{
+  display:block;
+  font-family:'Press Start 2P',monospace;
+  font-size:6px;letter-spacing:1.5px;
+  color:var(--gray-700);text-transform:uppercase;
+  margin-bottom:8px;
+}
+.ob-input{
+  width:100%;padding:12px 14px;
+  background:var(--bg);
+  border:1.5px solid var(--border-strong);
+  color:var(--gray-900);
+  font-family:'Inter',sans-serif;font-size:16px;
+  border-radius:4px;
+  transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;appearance:none;
+}
+.ob-input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(0,107,68,0.12)}
+.ob-input::placeholder{color:var(--gray-300)}
+.ob-info-card{
+  background:var(--bg-off);
+  border:1px solid var(--border);
+  border-left:3px solid var(--green);
+  padding:16px;margin-bottom:16px;
+  border-radius:0 4px 4px 0;
+}
+.ob-info-card .ic-title{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--green);letter-spacing:1.5px;margin-bottom:10px;
+}
+.ob-stat-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);
+}
+.ob-stat-row:last-child{border:none}
+.ob-stat-label{font-size:12px;color:var(--gray-500)}
+.ob-stat-val{
+  font-family:'Press Start 2P',monospace;font-size:8px;color:var(--green-dark);
+  text-align:right;
+}
+.ob-warning{
+  background:var(--blue-light);
+  border:1px solid #90CAF9;
+  border-left:3px solid var(--blue-bright);
+  padding:12px 14px;margin-top:8px;
+  border-radius:0 4px 4px 0;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.ob-warning .warn-icon{font-size:16px;flex-shrink:0}
+.ob-warning .warn-text{font-size:11px;color:var(--gray-700);line-height:1.6}
+.ob-foot{
+  padding:16px 20px;
+  background:var(--bg);border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.btn-primary{
+  width:100%;padding:13px;
+  font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:1.5px;
+  background:var(--green);
+  color:#FFFFFF;border:none;
+  cursor:pointer;text-transform:uppercase;
+  box-shadow:0 3px 0 var(--green-dark),0 4px 8px rgba(0,0,0,0.1);
+  clip-path:polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+  transition:all .1s;
+}
+.btn-primary:hover{background:var(--green-mid);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-dark)}
+.btn-primary:disabled{
+  background:var(--gray-300);color:var(--gray-500);cursor:not-allowed;
+  transform:none;box-shadow:none;
+}
+.btn-back{
+  width:100%;padding:10px;margin-top:8px;
+  font-family:'Press Start 2P',monospace;font-size:6px;letter-spacing:1px;
+  background:transparent;color:var(--gray-500);
+  border:1px solid var(--border-strong);
+  cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:4px;
+}
+.btn-back:hover{border-color:var(--green);color:var(--green)}
+
+/* ========== GAME HUD ========== */
+#game{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+.hud-top{
+  background:#FFFFFF;
+  border-bottom:2px solid var(--green);
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08);
+}
+.hud-brand-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;
+  background:var(--green-dark);
+}
+.hud-game-title{
+  font-family:'Press Start 2P',monospace;font-size:9px;
+  color:#FFFFFF;letter-spacing:1px;
+}
+.hud-era-badge{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  background:rgba(255,255,255,0.15);
+  color:#FFFFFF;padding:4px 10px;
+  border:1px solid rgba(255,255,255,0.3);
+  letter-spacing:.5px;
+}
+.hud-resources{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:#FFFFFF;
+}
+.hud-res{
+  padding:8px 10px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:2px;
+  transition:background .15s;cursor:default;
+}
+.hud-res:last-child{border-right:none}
+.hud-res:hover{background:var(--bg-off)}
+.hud-res-icon{font-size:13px;line-height:1}
+.hud-res-label{
+  font-family:'Press Start 2P',monospace;font-size:4px;
+  color:var(--gray-500);letter-spacing:.5px;
+  text-transform:uppercase;line-height:1.5;
+}
+.hud-res-val{
+  font-family:'Press Start 2P',monospace;font-size:8px;
+  color:var(--gray-900);letter-spacing:.5px;
+}
+.hud-res-val.low{color:var(--red-bright)!important;animation:pulse-red 1.2s infinite}
+@keyframes pulse-red{0%,100%{opacity:1}50%{opacity:.4}}
+.hud-hp-bar{height:3px;background:var(--gray-100);margin-top:3px;border-radius:2px;overflow:hidden}
+.hud-hp-fill{height:100%;border-radius:2px;transition:width .4s}
+
+/* ========== NAV TABS ========== */
+.nav-tabs{
+  display:flex;background:var(--bg);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{
+  padding:10px 14px;
+  font-family:'Press Start 2P',monospace;font-size:6px;letter-spacing:.3px;
+  color:var(--gray-500);cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:all .15s;text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;
+}
+.nav-tab:hover:not(.act){color:var(--gray-700);background:var(--bg-off)}
+.nav-tab.act{
+  color:var(--green);border-bottom-color:var(--green);
+  background:var(--bg);font-weight:700;
+}
+
+/* ========== MAIN CONTENT ========== */
+.g-content{padding:16px;flex:1;overflow-y:auto;padding-bottom:100px}
+
+/* ========== SECTION HEADER ========== */
+.scroll-header{
+  background:var(--bg-off);
+  border:1px solid var(--border);
+  border-left:3px solid var(--green);
+  padding:14px 16px;margin-bottom:16px;
+}
+.scroll-title{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--green);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;
+}
+.scroll-h{font-size:18px;font-weight:700;color:var(--gray-900);margin-bottom:4px}
+.scroll-desc{font-size:11px;color:var(--gray-500);line-height:1.6}
+
+/* ========== RESOURCE CARDS ========== */
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.res-card{
+  padding:14px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  border-radius:4px;
+}
+.res-card-label{
+  font-family:'Press Start 2P',monospace;font-size:5px;
+  color:var(--gray-500);letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:4px;
+}
+.res-card-val{
+  font-family:'Press Start 2P',monospace;font-size:10px;
+  color:var(--gray-900);margin-bottom:6px;
+}
+.res-card-sub{font-size:10px;color:var(--gray-500);line-height:1.4}
+
+/* ========== PERIODO TIMELINE ========== */
+.era-timeline{margin-bottom:16px}
+.era-label{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--gray-500);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;
+}
+.eras-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.era-block{
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  padding:10px 6px;text-align:center;
+  border-radius:4px;transition:all .25s;cursor:default;
+}
+.era-block.active{
+  border-color:var(--green);
+  background:var(--green-light);
+  box-shadow:0 0 0 2px rgba(0,107,68,0.2);
+}
+.era-block.done{
+  border-color:var(--gray-300);
+  background:var(--gray-50);
+}
+.era-block.future{opacity:.4}
+.era-block-age{
+  font-family:'Press Start 2P',monospace;font-size:8px;margin-bottom:4px;
+}
+.era-block.active .era-block-age{color:var(--green-dark)}
+.era-block.done .era-block-age{color:var(--gray-500)}
+.era-block.future .era-block-age{color:var(--gray-300)}
+.era-block-name{font-size:8px;color:var(--gray-700);line-height:1.3;font-weight:500}
+.era-block-val{
+  font-family:'Press Start 2P',monospace;font-size:5px;
+  color:var(--gray-400);margin-top:6px;
+}
+
+/* ========== APORTACIONES PANEL ========== */
+.contrib-panel{
+  background:var(--green-light);
+  border:1px solid #A8D5C0;
+  border-left:3px solid var(--green);
+  padding:16px;margin-bottom:16px;border-radius:0 4px 4px 0;
+}
+.contrib-title{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--green-dark);letter-spacing:1.5px;margin-bottom:12px;text-transform:uppercase;
+}
+.contrib-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid rgba(0,107,68,0.15);
+}
+.contrib-row:last-child{border:none}
+.contrib-label{font-size:11px;color:var(--gray-700)}
+.contrib-val{
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  color:var(--green-dark);
+}
+.contrib-val.deduction{color:var(--red-bright)}
+.contrib-val.total{color:var(--green-dark);font-size:8px}
+
+/* ========== AHORRO VOLUNTARIO ========== */
+.vol-panel{
+  background:var(--gold-light);
+  border:1px solid #F0D890;
+  border-left:3px solid var(--gold-bright);
+  padding:16px;margin-bottom:16px;border-radius:0 4px 4px 0;
+}
+.vol-title{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--gold-dark);letter-spacing:1.5px;margin-bottom:12px;text-transform:uppercase;
+}
+.slider-wrap{margin-bottom:16px}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.slider-label{font-size:11px;color:var(--gray-700)}
+.slider-val{
+  font-family:'Press Start 2P',monospace;font-size:9px;color:var(--gold-dark);
+  background:#FFFFFF;padding:4px 8px;border:1px solid #F0D890;border-radius:3px;
+}
+input[type=range]{
+  width:100%;height:16px;-webkit-appearance:none;appearance:none;
+  background:transparent;cursor:pointer;
+}
+input[type=range]::-webkit-slider-runnable-track{
+  height:6px;
+  background:linear-gradient(90deg,var(--gray-100),var(--gray-200));
+  border:1px solid var(--border-strong);border-radius:3px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:20px;height:20px;
+  background:linear-gradient(135deg,var(--gold-bright),var(--gold));
+  border:2px solid #FFFFFF;box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  border-radius:50%;margin-top:-8px;cursor:pointer;transition:transform .1s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;
+  background:linear-gradient(135deg,var(--gold-bright),var(--gold));
+  border:2px solid #FFFFFF;border-radius:50%;
+}
+
+/* ========== COMPOUND VIZ ========== */
+.compound-viz{
+  background:var(--bg);
+  border:1px solid var(--border);
+  padding:16px;margin-bottom:16px;border-radius:4px;
+}
+.compound-title{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--green-dark);letter-spacing:1.5px;margin-bottom:12px;text-transform:uppercase;
+}
+.compound-bars{display:flex;align-items:flex-end;gap:4px;height:100px}
+.compound-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.compound-bar{
+  width:100%;
+  background:linear-gradient(180deg,var(--green-bright),var(--green));
+  border-radius:2px 2px 0 0;
+  transition:height .5s ease;min-height:3px;
+}
+.compound-bar.principal-portion{
+  background:linear-gradient(180deg,var(--blue-bright),var(--blue));
+  border-radius:0;
+}
+.compound-bar-label{
+  font-family:'Press Start 2P',monospace;font-size:5px;
+  color:var(--gray-400);text-align:center;
+}
+.compound-legend{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--gray-500)}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ========== PROJECTION TABLE ========== */
+.proj-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11px}
+.proj-table thead{background:var(--green-dark)}
+.proj-table th{
+  font-family:'Press Start 2P',monospace;font-size:5px;
+  color:#FFFFFF;padding:8px 10px;text-align:left;letter-spacing:.8px;
+}
+.proj-table td{
+  padding:8px 10px;color:var(--gray-700);
+  border-bottom:1px solid var(--border);
+}
+.proj-table tr:hover td{background:var(--bg-off)}
+.proj-table .val-gold{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--gold-dark)}
+.proj-table .val-green{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--green)}
+.proj-table tr.highlight-row td{background:var(--green-light);font-weight:600}
+
+/* ========== PROYECCION PANEL ========== */
+.oracle-panel{
+  background:var(--blue-light);
+  border:1px solid #90CAF9;
+  border-top:3px solid var(--blue-bright);
+  padding:16px;margin-bottom:16px;border-radius:0 0 4px 4px;
+  position:relative;
+}
+.oracle-panel::before{
+  content:'PROYECCIÓN AL RETIRO (65 AÑOS)';
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--blue-bright);letter-spacing:2px;
+  display:block;margin-bottom:20px;text-align:center;
+}
+.oracle-content{margin-top:0}
+.oracle-verdict{
+  text-align:center;
+  font-size:13px;font-weight:600;
+  margin:12px 0;line-height:1.6;
+  padding:12px;border-radius:4px;
+}
+.oracle-verdict.victory{background:var(--green-light);color:var(--green-dark);border:1px solid #A8D5C0}
+.oracle-verdict.warning{background:var(--gold-light);color:var(--gold-dark);border:1px solid #F0D890}
+.oracle-verdict.defeat{background:var(--red-light);color:var(--red-dark);border:1px solid #FFCDD2}
+
+/* ========== EVENTOS ========== */
+.events-log{
+  background:var(--bg);
+  border:1px solid var(--border);
+  margin-bottom:16px;border-radius:4px;overflow:hidden;
+}
+.events-log-title{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--gray-700);letter-spacing:1.5px;padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-off);text-transform:uppercase;
+}
+.event-entry{
+  padding:12px;border-bottom:1px solid var(--border);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.event-entry:last-child{border:none}
+.event-icon{font-size:18px;flex-shrink:0}
+.event-body{}
+.event-title{font-size:12px;font-weight:600;color:var(--gray-900);margin-bottom:2px}
+.event-desc{font-size:10px;color:var(--gray-500);line-height:1.5}
+.event-tag{
+  display:inline-block;
+  font-family:'Press Start 2P',monospace;font-size:5px;padding:2px 6px;
+  margin-top:4px;letter-spacing:.5px;border-radius:2px;
+}
+.event-tag.pos{background:var(--green-light);color:var(--green-dark)}
+.event-tag.neg{background:var(--red-light);color:var(--red-dark)}
+.event-tag.neu{background:var(--bg-subtle);color:var(--gray-500)}
+
+/* ========== AVANZAR ========== */
+.advance-wrap{
+  padding:14px 16px;
+  border-top:2px solid var(--green);
+  background:#FFFFFF;
+  position:sticky;bottom:0;z-index:50;
+  display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 -4px 12px rgba(0,0,0,0.06);
+}
+.btn-advance{
+  width:100%;padding:13px;
+  font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:1px;
+  background:var(--green);
+  color:#FFFFFF;border:none;
+  cursor:pointer;text-transform:uppercase;
+  box-shadow:0 3px 0 var(--green-dark),0 4px 10px rgba(0,74,47,0.2);
+  clip-path:polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+  transition:all .1s;
+}
+.btn-advance:hover{background:var(--green-mid);transform:translateY(-1px)}
+.btn-advance:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-dark)}
+.btn-advance:disabled{
+  background:var(--gray-300);color:var(--gray-500);cursor:not-allowed;
+  transform:none;box-shadow:none;
+}
+
+/* ========== MODAL ========== */
+#ev-modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;padding:20px;
+  backdrop-filter:blur(2px);
+}
+.modal-box{
+  width:100%;max-width:380px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-top:4px solid var(--green);
+  box-shadow:var(--shadow-lg);
+  padding:24px;border-radius:0 0 4px 4px;
+}
+.modal-tag{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--green);letter-spacing:2px;text-align:center;
+  margin-bottom:14px;text-transform:uppercase;
+}
+.modal-icon{font-size:36px;text-align:center;margin-bottom:10px}
+.modal-title{
+  font-size:17px;font-weight:700;
+  color:var(--gray-900);text-align:center;margin-bottom:8px;line-height:1.3;
+}
+.modal-desc{font-size:12px;color:var(--gray-500);text-align:center;line-height:1.7;margin-bottom:12px}
+.modal-impact{
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  text-align:center;padding:10px;
+  background:var(--bg-off);border:1px solid var(--border);
+  margin-bottom:16px;letter-spacing:.5px;border-radius:3px;
+}
+.modal-actions{display:flex;flex-direction:column;gap:8px}
+.btn-modal{
+  width:100%;padding:12px;
+  font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:.8px;
+  background:var(--green);color:#FFFFFF;border:none;
+  cursor:pointer;text-transform:uppercase;
+  box-shadow:0 3px 0 var(--green-dark);
+  clip-path:polygon(4px 0%,calc(100% - 4px) 0%,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0% calc(100% - 4px),0% 4px);
+  transition:all .1s;
+}
+.btn-modal:hover{background:var(--green-mid);transform:translateY(-1px)}
+.btn-modal.danger{background:var(--red-bright);box-shadow:0 3px 0 var(--red-dark)}
+
+/* ========== GAME OVER ========== */
+#gameover{
+  position:fixed;inset:0;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:300;padding:24px;overflow-y:auto;
+}
+.go-flag-bar{
+  width:100%;height:8px;
+  background:linear-gradient(90deg,var(--red-bright) 33%,#FFFFFF 33%,#FFFFFF 66%,var(--green) 66%);
+  position:absolute;top:0;left:0;
+}
+.go-ornament{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--gray-500);letter-spacing:3px;margin-bottom:20px;
+  text-align:center;text-transform:uppercase;
+  margin-top:20px;
+}
+.go-icon{font-size:56px;text-align:center;margin-bottom:14px}
+.go-title{
+  font-size:clamp(18px,5vw,26px);font-weight:800;
+  text-align:center;margin-bottom:8px;line-height:1.2;
+}
+.go-title.victory{color:var(--green-dark)}
+.go-title.defeat{color:var(--red-dark)}
+.go-desc{
+  font-size:12px;color:var(--gray-500);text-align:center;
+  line-height:1.8;max-width:360px;margin:0 auto 20px;
+}
+.go-divider{
+  width:80%;height:1px;background:var(--border);
+  margin:0 auto 20px;
+}
+.go-stats-panel{
+  width:100%;max-width:360px;
+  background:var(--bg);border:1px solid var(--border);
+  margin-bottom:24px;border-radius:4px;overflow:hidden;
+}
+.go-stat-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+}
+.go-stat-row:last-child{border:none}
+.go-stat-key{font-size:11px;color:var(--gray-500)}
+.go-stat-val{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--gray-900)}
+.go-stat-val.pos{color:var(--green)}
+.go-stat-val.neg{color:var(--red-bright)}
+.btn-restart{
+  font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:1px;
+  padding:14px 28px;
+  background:var(--green);color:#FFFFFF;border:none;
+  cursor:pointer;text-transform:uppercase;
+  box-shadow:0 4px 0 var(--green-dark),0 6px 16px rgba(0,74,47,0.2);
+  clip-path:polygon(6px 0%,calc(100% - 6px) 0%,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0% calc(100% - 6px),0% 6px);
+}
+.btn-restart:hover{background:var(--green-mid)}
+
+/* ========== UTILS ========== */
+.pos{color:var(--green)}.neg{color:var(--red-bright)}.neu{color:var(--gold-dark)}
+@media(max-width:400px){
+  .hud-resources{grid-template-columns:repeat(2,1fr)}
+  .eras-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ======== COVER ======== -->
+<div id="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-accent-bar"></div>
+  <div class="cover-logo-area">
+    <div class="cover-institution">Sistema de Ahorro para el Retiro · México</div>
+    <div class="cover-emblem">🇲🇽</div>
+    <div class="cover-title">AFORE <span>Simulador</span></div>
+    <div class="cover-badge">LEY 97 · IMSS · CONSAR</div>
+    <div class="cover-desc">
+      Simula tu vida laboral completa en México.<br>
+      Cada periodo de 5 años avanza tu cuenta AFORE.<br>
+      ¿Alcanzará tu pensión para una vejez digna?
+    </div>
+    <button class="btn-cover" onclick="startOnboarding()">▶ INICIAR SIMULACIÓN</button>
+    <div class="cover-legal">Tasa real neta 5.5% · Aportación tripartita · Interés compuesto</div>
+  </div>
+</div>
+
+<!-- ======== ONBOARDING ======== -->
+<div id="onboarding" class="hidden">
+  <div class="ob-head">
+    <div class="ob-brand">AFORE SIMULADOR</div>
+    <div class="ob-era" id="ob-era-label">PASO 0</div>
+  </div>
+  <div class="ob-progress-wrap">
+    <div class="ob-progress-label">PROGRESO DE REGISTRO</div>
+    <div class="ob-steps" id="ob-steps"></div>
+  </div>
+  <div class="ob-body" id="ob-body"></div>
+  <div class="ob-foot">
+    <button class="btn-primary" id="ob-next" onclick="obNext()">CONTINUAR →</button>
+    <button class="btn-back" id="ob-back" onclick="obBack()" style="display:none">← REGRESAR</button>
+  </div>
+</div>
+
+<!-- ======== GAME ======== -->
+<div id="game" class="hidden">
+  <div class="hud-top">
+    <div class="hud-brand-bar">
+      <div class="hud-game-title">AFORE SIMULADOR</div>
+      <div class="hud-era-badge" id="hud-era">PERIODO I · 25 AÑOS</div>
+    </div>
+    <div class="hud-resources">
+      <div class="hud-res" title="Ingreso disponible después de descuentos IMSS">
+        <div class="hud-res-icon">💵</div>
+        <div class="hud-res-label">Ingreso Disp.</div>
+        <div class="hud-res-val" id="hud-oro">$0</div>
+        <div class="hud-hp-bar"><div class="hud-hp-fill" id="hud-oro-bar" style="width:0%;background:var(--green-bright)"></div></div>
+      </div>
+      <div class="hud-res" title="Semanas cotizadas en el IMSS">
+        <div class="hud-res-icon">📋</div>
+        <div class="hud-res-label">Sem. Cotizadas</div>
+        <div class="hud-res-val" id="hud-semanas">0</div>
+        <div class="hud-hp-bar"><div class="hud-hp-fill" id="hud-sem-bar" style="width:0%;background:var(--blue-bright)"></div></div>
+      </div>
+      <div class="hud-res" title="Saldo acumulado en tu AFORE">
+        <div class="hud-res-icon">🏦</div>
+        <div class="hud-res-label">Saldo AFORE</div>
+        <div class="hud-res-val" id="hud-afore">$0</div>
+        <div class="hud-hp-bar"><div class="hud-hp-fill" id="hud-afore-bar" style="width:0%;background:var(--gold-bright)"></div></div>
+      </div>
+      <div class="hud-res" title="Tu edad actual en la simulación">
+        <div class="hud-res-icon">🗓</div>
+        <div class="hud-res-label">Edad Actual</div>
+        <div class="hud-res-val" id="hud-edad">25</div>
+        <div class="hud-hp-bar"><div class="hud-hp-fill" id="hud-edad-bar" style="width:5%;background:var(--blue-bright)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab act" id="tab-imperio" onclick="showTab('imperio')">📊 Resumen</div>
+    <div class="nav-tab" id="tab-afore" onclick="showTab('afore')">🏦 Mi AFORE</div>
+    <div class="nav-tab" id="tab-proyeccion" onclick="showTab('proyeccion')">📈 Proyección</div>
+    <div class="nav-tab" id="tab-oraculo" onclick="showTab('oraculo')">🔭 Al Retiro</div>
+    <div class="nav-tab" id="tab-cronicas" onclick="showTab('cronicas')">📰 Historial</div>
+  </div>
+
+  <div class="g-content">
+
+    <!-- TAB: RESUMEN -->
+    <div id="panel-imperio">
+      <div class="scroll-header">
+        <div class="scroll-title">📊 SITUACIÓN ACTUAL</div>
+        <div class="scroll-h" id="imp-era-title">Periodo I — Inicio de la Vida Laboral</div>
+        <div class="scroll-desc" id="imp-era-desc">Tu cuenta AFORE se activa con tu primer empleo formal. Cada semana cotizada construye tu futuro.</div>
+      </div>
+
+      <div class="res-grid">
+        <div class="res-card">
+          <div class="res-card-label">💵 Salario Mensual</div>
+          <div class="res-card-val" id="imp-salario">$0</div>
+          <div class="res-card-sub">Ingreso mensual bruto</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">📉 Descuento IMSS</div>
+          <div class="res-card-val" id="imp-imss" style="color:var(--red-bright)">−$0</div>
+          <div class="res-card-sub">Cuotas obligatorias Ley 97</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">💰 Ingreso Disponible</div>
+          <div class="res-card-val" id="imp-disponible">$0</div>
+          <div class="res-card-sub">Para gastos + ahorro voluntario</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">🏦 Saldo AFORE</div>
+          <div class="res-card-val" id="imp-afore" style="color:var(--green)">$0</div>
+          <div class="res-card-sub">Saldo acumulado total</div>
+        </div>
+      </div>
+
+      <div class="era-timeline">
+        <div class="era-label">LÍNEA DE VIDA LABORAL — 40 AÑOS</div>
+        <div class="eras-grid" id="era-timeline-grid"></div>
+      </div>
+
+      <div class="contrib-panel">
+        <div class="contrib-title">⚙ DESGLOSE DE APORTACIONES MENSUALES (LEY 97)</div>
+        <div id="contrib-rows"></div>
+      </div>
+    </div>
+
+    <!-- TAB: MI AFORE -->
+    <div id="panel-afore" class="hidden">
+      <div class="scroll-header">
+        <div class="scroll-title">🏦 GESTIÓN DE MI AFORE</div>
+        <div class="scroll-h">Aportaciones Voluntarias</div>
+        <div class="scroll-desc">El ahorro voluntario adicional es deducible de ISR y acelera el crecimiento de tu cuenta gracias al interés compuesto.</div>
+      </div>
+
+      <div class="vol-panel">
+        <div class="vol-title">💛 AHORRO VOLUNTARIO MENSUAL ADICIONAL</div>
+        <div class="slider-wrap">
+          <div class="slider-header">
+            <span class="slider-label">Aportación voluntaria mensual</span>
+            <span class="slider-val" id="vol-val">$0</span>
+          </div>
+          <input type="range" id="vol-slider" min="0" max="5000" step="100" value="0" oninput="updateVolSlider()">
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--gray-400)">$0</span>
+            <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--gray-400)">$5,000</span>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-header">
+            <span class="slider-label">Tasa anual esperada del SIEFORE</span>
+            <span class="slider-val" id="vol-tasa-val">5.5%</span>
+          </div>
+          <input type="range" id="vol-tasa" min="3" max="10" step="0.5" value="5.5" oninput="updateTasaSlider()">
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--gray-400)">3%</span>
+            <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--gray-400)">10%</span>
+          </div>
+        </div>
+        <div class="ob-info-card" style="margin-top:0;background:#FFFFF0;border-color:#F0D890">
+          <div class="ic-title" style="color:var(--gold-dark)">RENDIMIENTO PROYECTADO — PERIODO ACTUAL (5 AÑOS)</div>
+          <div class="ob-stat-row">
+            <span class="ob-stat-label">Aportación total en el periodo</span>
+            <span class="ob-stat-val" id="vol-por-era">$0</span>
+          </div>
+          <div class="ob-stat-row">
+            <span class="ob-stat-label">Rendimiento generado en el periodo</span>
+            <span class="ob-stat-val" id="vol-rend" style="color:var(--green)">$0</span>
+          </div>
+          <div class="ob-stat-row">
+            <span class="ob-stat-label">Saldo acumulado al fin del periodo</span>
+            <span class="ob-stat-val" id="vol-total-era">$0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="compound-viz">
+        <div class="compound-title">📈 CRECIMIENTO POR INTERÉS COMPUESTO — 8 PERIODOS (40 AÑOS)</div>
+        <div class="compound-bars" id="compound-bars"></div>
+        <div class="compound-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue-bright)"></div>Capital aportado</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green-bright)"></div>Rendimientos AFORE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PROYECCION -->
+    <div id="panel-proyeccion" class="hidden">
+      <div class="scroll-header">
+        <div class="scroll-title">📈 TABLA DE PROYECCIÓN</div>
+        <div class="scroll-h">Crecimiento por Periodo de 5 Años</div>
+        <div class="scroll-desc">Cada fila muestra cómo el interés compuesto transforma tus aportaciones. El poder está en el tiempo, no en la cantidad.</div>
+      </div>
+      <table class="proj-table" id="proj-table">
+        <thead>
+          <tr>
+            <th>PERIODO</th>
+            <th>EDAD</th>
+            <th>SALDO INICIO</th>
+            <th>APORT.</th>
+            <th>RENDIM.</th>
+            <th>SALDO FINAL</th>
+          </tr>
+        </thead>
+        <tbody id="proj-body"></tbody>
+      </table>
+      <div class="ob-warning">
+        <div class="warn-icon">ℹ️</div>
+        <div class="warn-text">Proyección con tasa real neta del 5.5% anual (promedio histórico SIEFORE). Los rendimientos no incluyen inflación. Las aportaciones asumen incremento salarial gradual.</div>
+      </div>
+    </div>
+
+    <!-- TAB: AL RETIRO -->
+    <div id="panel-oraculo" class="hidden">
+      <div class="scroll-header">
+        <div class="scroll-title">🔭 ESTIMACIÓN AL RETIRO</div>
+        <div class="scroll-h">Pensión a los 65 años</div>
+        <div class="scroll-desc">Proyección del saldo final de tu AFORE y el monto estimado de tu pensión mensual vitalicia si te retiras a los 65 años.</div>
+      </div>
+      <div class="oracle-panel">
+        <div class="oracle-content" id="oracle-content"></div>
+      </div>
+      <div class="res-grid">
+        <div class="res-card">
+          <div class="res-card-label">🏦 Saldo Final Estimado</div>
+          <div class="res-card-val" id="or-saldo-final" style="color:var(--green)">$0</div>
+          <div class="res-card-sub">Proyectado a los 65 años</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">💰 Pensión Mensual</div>
+          <div class="res-card-val" id="or-pension">$0</div>
+          <div class="res-card-sub">Renta vitalicia estimada</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">📊 Tasa de Reemplazo</div>
+          <div class="res-card-val" id="or-tasa-reemplazo">0%</div>
+          <div class="res-card-sub">% de tu último salario</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-label">📋 Semanas mínimas</div>
+          <div class="res-card-val">1,250</div>
+          <div class="res-card-sub">Para pensión garantizada IMSS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: HISTORIAL -->
+    <div id="panel-cronicas" class="hidden">
+      <div class="scroll-header">
+        <div class="scroll-title">📰 HISTORIAL DE EVENTOS</div>
+        <div class="scroll-h">Bitácora de tu Vida Laboral</div>
+        <div class="scroll-desc">Registro cronológico de todos los eventos que han afectado tu trayectoria financiera y tu cuenta AFORE.</div>
+      </div>
+      <div class="events-log" id="events-log">
+        <div class="events-log-title">📰 BITÁCORA LABORAL</div>
+        <div id="events-entries">
+          <div class="event-entry">
+            <div class="event-icon">🏁</div>
+            <div class="event-body">
+              <div class="event-title">Simulación iniciada</div>
+              <div class="event-desc">Tu vida laboral formal en México comienza. Tu empleador registra tu alta en el IMSS y tus aportaciones inician automáticamente.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /g-content -->
+
+  <div class="advance-wrap">
+    <button class="btn-advance" id="btn-advance" onclick="advanceEra()">▶ AVANZAR AL SIGUIENTE PERIODO (+5 AÑOS)</button>
+  </div>
+</div>
+
+<!-- ======== EVENT MODAL ======== -->
+<div id="ev-modal" class="hidden">
+  <div class="modal-box">
+    <div class="modal-tag" id="ev-tag">EVENTO DEL PERIODO</div>
+    <div class="modal-icon" id="ev-icon">📋</div>
+    <div class="modal-title" id="ev-title">Título</div>
+    <div class="modal-desc" id="ev-desc">Descripción</div>
+    <div class="modal-impact" id="ev-impact">Impacto</div>
+    <div class="modal-actions" id="ev-actions"></div>
+  </div>
+</div>
+
+<!-- ======== GAME OVER ======== -->
+<div id="gameover" class="hidden">
+  <div class="go-flag-bar"></div>
+  <div class="go-ornament">─── RESULTADO DE LA SIMULACIÓN ───</div>
+  <div class="go-icon" id="go-icon">🏦</div>
+  <div class="go-title" id="go-title">Título</div>
+  <div class="go-divider"></div>
+  <div class="go-desc" id="go-desc">Descripción</div>
+  <div class="go-stats-panel" id="go-stats"></div>
+  <button class="btn-restart" onclick="restart()">▶ NUEVA SIMULACIÓN</button>
+</div>
+
+<script>
+// =====================================================
+// STATE
+// =====================================================
+const TASA_REAL = 0.055;
+const ERAS = [
+  {name:'Inicio Laboral',     desc:'Primer empleo formal. Tu AFORE se activa con el alta en el IMSS.',startAge:25,endAge:30},
+  {name:'Crecimiento Profesional',desc:'Ganas experiencia y tu salario comienza a crecer. Cada peso extra al AFORE vale más ahora.',startAge:30,endAge:35},
+  {name:'Consolidación',      desc:'Etapa de mayor estabilidad. Aquí se construye la mayor parte del patrimonio de retiro.',startAge:35,endAge:40},
+  {name:'Pico Productivo',    desc:'Salario en su punto más alto. El interés compuesto ya trabaja fuertemente a tu favor.',startAge:40,endAge:45},
+  {name:'Madurez Laboral',    desc:'Los rendimientos acumulados ya superan tus aportaciones mensuales. El tiempo hace su trabajo.',startAge:45,endAge:50},
+  {name:'Planeación del Retiro',desc:'Momento de revisar tu saldo y ajustar estrategia. ¿Es suficiente lo que acumulaste?',startAge:50,endAge:55},
+  {name:'Recta Final',        desc:'Últimas aportaciones activas. El saldo AFORE debe sostenerte por 20 años o más.',startAge:55,endAge:60},
+  {name:'Pre-Retiro',         desc:'A 5 años del retiro. La CONSAR te asigna un SIEFORE conservador para proteger tu saldo.',startAge:60,endAge:65},
+];
+const RANDOM_EVENTS = [
+  {ico:'📉',title:'Período de Desempleo',desc:'Perdiste tu empleo formal por 6 meses. Sin cotización al IMSS durante ese tiempo.',impact:(s)=>{s.semanasExtra-=26;return '-26 semanas cotizadas'},type:'neg',tag:'DESEMPLEO'},
+  {ico:'📈',title:'Aumento de Sueldo',desc:'Tu desempeño fue reconocido con un incremento del 15% en tu salario mensual.',impact:(s)=>{s.salario*=1.15;return '+15% al salario mensual'},type:'pos',tag:'AUMENTO'},
+  {ico:'🏥',title:'Emergencia Médica',desc:'Una hospitalización costosa afectó tu presupuesto. Tu AFORE permanece intocable.',impact:(s)=>{return 'Gastos extraordinarios de salud este periodo'},type:'neg',tag:'SALUD'},
+  {ico:'📉',title:'Caída en Mercados Financieros',desc:'Los SIEFORE reportaron rendimientos negativos este año. Baja temporal en tu cuenta.',impact:(s)=>{s.tasaEraBonus=-0.02;return '-2% a la tasa de rendimiento de este periodo'},type:'neg',tag:'MERCADOS'},
+  {ico:'📈',title:'Bonos de Rendimiento SIEFORE',desc:'Tu AFORE obtuvo rendimientos excepcionales por buen desempeño del mercado.',impact:(s)=>{s.tasaEraBonus=0.02;return '+2% adicional a la tasa de rendimiento'},type:'pos',tag:'RENDIMIENTO'},
+  {ico:'👶',title:'Nacimiento de un Hijo',desc:'Nueva responsabilidad familiar. Los gastos del hogar aumentan significativamente.',impact:(s)=>{return 'Incremento en gastos familiares del periodo'},type:'neg',tag:'FAMILIA'},
+  {ico:'🏠',title:'Crédito INFONAVIT',desc:'Solicitaste crédito de vivienda. Parte del saldo de la subcuenta de vivienda se aplica.',impact:(s)=>{return 'Subcuenta vivienda aplicada a crédito hipotecario'},type:'neu',tag:'VIVIENDA'},
+  {ico:'⚖️',title:'Reforma al Sistema de Pensiones',desc:'El gobierno incrementó la aportación patronal obligatoria. Beneficio para el trabajador.',impact:(s)=>{s.bonusPatronal=0.005;return '+0.5% adicional de aportación patronal'},type:'pos',tag:'REFORMA'},
+  {ico:'🌧️',title:'Reducción Salarial',desc:'Tu empresa redujo sueldos por recortes presupuestales. Menor aportación este periodo.',impact:(s)=>{s.semanasExtra-=13;return '-13 semanas cotizadas al IMSS'},type:'neg',tag:'RECORTE'},
+  {ico:'💡',title:'Asesoría Financiera',desc:'Tomaste un curso de planeación para el retiro. Decides incrementar tu ahorro voluntario.',impact:(s)=>{s.ahorroVoluntario+=200;return '+$200 al mes de ahorro voluntario en AFORE'},type:'pos',tag:'EDUCACIÓN'},
+];
+
+let S = {};
+
+function initState(){
+  S = {
+    playerName:'',salario:0,edad:25,eraIndex:0,
+    saldoAfore:0,saldoPrincipal:0,semanas:0,semanasExtra:0,
+    ahorroVoluntario:0,tasaVoluntaria:0.055,tasaEraBonus:0,bonusPatronal:0,
+    historialAfore:[],eventos:[],gameOver:false,pendingEvent:null,activeTab:'imperio',
+  };
+}
+initState();
+
+// =====================================================
+// LÓGICA FINANCIERA AFORE
+// =====================================================
+function calcularAforeMensual(salarioBase) {
+  const UMA_DIARIA = 108.57;
+  const UMA_MENSUAL = UMA_DIARIA * 30.4;
+  const retiro = salarioBase * 0.02;
+  const cesantia = salarioBase * 0.03150;
+  const cuotaSocial = Math.min(salarioBase * 0.005, UMA_MENSUAL * 0.005 * 25);
+  const patronal = salarioBase * 0.065;
+  const bonusExtra = salarioBase * (S.bonusPatronal || 0);
+  const enfermedadMaternidad = salarioBase * 0.00400;
+  const invalidez = salarioBase * 0.00625;
+  const infonavit = salarioBase * 0.05;
+  const totalAfore = retiro + cesantia + cuotaSocial + patronal + bonusExtra;
+  const descuentoNomina = enfermedadMaternidad + invalidez;
+  return {
+    totalDescuento: descuentoNomina,
+    totalAfore: totalAfore,
+    desglose: [
+      {label:'Retiro (2% tripartito)',val:retiro,esAfore:true},
+      {label:'Cesantía y Vejez (3.15%)',val:cesantia,esAfore:true},
+      {label:'Aportación patronal SAR (6.5%)',val:patronal+bonusExtra,esAfore:true},
+      {label:'Cuota Social IMSS',val:cuotaSocial,esAfore:true},
+      {label:'Enf. y Maternidad (0.4%, trabajador)',val:enfermedadMaternidad,esAfore:false},
+      {label:'Invalidez y Vida (0.625%, trabajador)',val:invalidez,esAfore:false},
+      {label:'INFONAVIT (5%, aportación patronal)',val:infonavit,esAfore:false},
+    ]
+  };
+}
+
+function aplicarInteresCompuesto(saldoAfore, ahorroMensual, tasaAnual, años) {
+  let saldo = saldoAfore;
+  let totalAportado = 0;
+  const tasaMensual = (Math.pow(1 + tasaAnual, 1/12) - 1);
+  const meses = años * 12;
+  for(let m = 0; m < meses; m++) {
+    saldo = saldo * (1 + tasaMensual) + ahorroMensual;
+    totalAportado += ahorroMensual;
+  }
+  return {saldoFinal:saldo,totalAportado:totalAportado,totalRendimientos:saldo-saldoAfore-totalAportado};
+}
+
+function calcularTasaDeReemplazo(saldoFinalAfore, ultimoSalario) {
+  const mesesVida = 240;
+  const tasaMensual = TASA_REAL / 12;
+  const pension = saldoFinalAfore * (tasaMensual * Math.pow(1+tasaMensual,mesesVida)) / (Math.pow(1+tasaMensual,mesesVida) - 1);
+  const tasa = pension / ultimoSalario;
+  let veredicto, icon, tipo;
+  if(tasa >= 0.7) {
+    veredicto = '✅ Tu pensión estimada cubre más del 70% de tu último salario. Según la OCDE, esto garantiza una vejez sin reducción drástica del nivel de vida.';
+    icon = '🎉'; tipo = 'victory';
+  } else if(tasa >= 0.4) {
+    veredicto = '⚠️ Tu pensión cubre entre el 40% y 70% de tu último salario. Cubre necesidades básicas, pero representa una reducción significativa del nivel de vida activo.';
+    icon = '⚖️'; tipo = 'warning';
+  } else {
+    veredicto = '❌ Tu pensión estimada es menor al 40% de tu último salario. Esto indica riesgo de insuficiencia económica en el retiro. Se recomienda incrementar el ahorro voluntario de inmediato.';
+    icon = '⚠️'; tipo = 'defeat';
+  }
+  return {pensionMensual:pension,tasaReemplazo:tasa,veredicto,icon,tipo};
+}
+
+// =====================================================
+// ONBOARDING
+// =====================================================
+let obStep = 0;
+const OB_STEPS = [
+  {
+    tag:'PASO 1 — DATOS DEL TRABAJADOR',
+    title:'¿Quién realiza la simulación?',
+    sub:'Ingresa tus datos para personalizar la proyección de tu AFORE',
+    render: () => `
+      <div class="ob-field">
+        <label class="ob-label">Nombre completo</label>
+        <input class="ob-input" id="ob-nombre" placeholder="Ej: Juan Pérez Martínez" value="${S.playerName}" oninput="S.playerName=this.value;validateOb()">
+      </div>
+      <div class="ob-field">
+        <label class="ob-label">Edad actual (años)</label>
+        <input class="ob-input" id="ob-edad" type="number" min="18" max="60" placeholder="25" value="${S.edad===25?'':S.edad}" oninput="S.edad=parseInt(this.value)||25;validateOb()">
+      </div>
+      <div class="ob-field">
+        <label class="ob-label">Salario mensual bruto (MXN)</label>
+        <input class="ob-input" id="ob-salario" type="number" min="4000" max="200000" placeholder="Ej: 15,000" value="${S.salario||''}" oninput="S.salario=parseFloat(this.value)||0;validateOb()">
+      </div>
+      <div class="ob-warning">
+        <div class="warn-icon">ℹ️</div>
+        <div class="warn-text">Este simulador aplica la Ley 97 del IMSS. Las aportaciones se calculan sobre tu Salario Base de Cotización (SBC). La simulación avanza desde tu edad actual hasta los 65 años en periodos de 5 años.</div>
+      </div>
+    `,
+    validate: () => S.playerName.length > 1 && S.salario >= 4000 && S.edad >= 18 && S.edad < 65
+  },
+  {
+    tag:'PASO 2 — APORTACIONES OBLIGATORIAS',
+    title:'Tu contribución al IMSS',
+    sub:'Así se calcula la aportación tripartita a tu AFORE cada mes',
+    render: () => {
+      const calc = calcularAforeMensual(S.salario);
+      const rows = calc.desglose.map(d => `
+        <div class="ob-stat-row">
+          <span class="ob-stat-label">${d.label}</span>
+          <span class="ob-stat-val" style="color:${d.esAfore?'var(--green-dark)':'var(--red-bright)'}">
+            ${d.esAfore?'🏦 ':'💳 '}${fmt(d.val)}
+          </span>
+        </div>
+      `).join('');
+      return `
+        <div class="ob-info-card">
+          <div class="ic-title">DESGLOSE LEY 97 — SALARIO ${fmt(S.salario)}/MES</div>
+          ${rows}
+          <div class="ob-stat-row" style="border-top:2px solid var(--green);margin-top:8px;padding-top:8px">
+            <span class="ob-stat-label" style="color:var(--green-dark);font-weight:600">TOTAL → AFORE MENSUAL</span>
+            <span class="ob-stat-val" style="color:var(--green-dark)">${fmt(calc.totalAfore)}/mes</span>
+          </div>
+        </div>
+        <div class="ob-info-card" style="border-left-color:var(--red-bright);background:var(--red-light)">
+          <div class="ic-title" style="color:var(--red-dark)">DESCUENTO VISIBLE EN TU NÓMINA</div>
+          <div class="ob-stat-row">
+            <span class="ob-stat-label">Cuotas descontadas al trabajador</span>
+            <span class="ob-stat-val" style="color:var(--red-dark)">−${fmt(calc.totalDescuento)}/mes</span>
+          </div>
+          <div class="ob-stat-row">
+            <span class="ob-stat-label">El resto es aportación del patrón + gobierno</span>
+            <span class="ob-stat-val" style="color:var(--gray-500)">Lo genera tu trabajo</span>
+          </div>
+        </div>
+        <div class="ob-warning">
+          <div class="warn-icon">💡</div>
+          <div class="warn-text">La aportación tripartita (trabajador + patrón + gobierno) va cada mes directo a tu cuenta AFORE. Con el paso de los años, el interés compuesto la multiplica exponencialmente. Por eso el tiempo es tu mayor aliado.</div>
+        </div>
+      `;
+    },
+    validate: () => true
+  },
+  {
+    tag:'PASO 3 — ESTRATEGIA DE AHORRO',
+    title:'Configura tu ahorro voluntario',
+    sub:'El ahorro adicional en AFORE es deducible de ISR (hasta 10% del ingreso anual)',
+    render: () => `
+      <div class="ob-field">
+        <label class="ob-label">Ahorro voluntario mensual adicional (MXN)</label>
+        <input class="ob-input" id="ob-voluntario" type="number" min="0" max="20000" placeholder="Ej: 500" value="${S.ahorroVoluntario||0}" oninput="S.ahorroVoluntario=parseFloat(this.value)||0;updateOraclePreview()">
+      </div>
+      <div class="ob-info-card" id="oracle-preview"></div>
+      <div class="ob-warning">
+        <div class="warn-icon">📊</div>
+        <div class="warn-text">Incluso $200/mes de ahorro voluntario generan una diferencia enorme en 40 años por el efecto del interés compuesto. Este ahorro se deposita junto a tus aportaciones obligatorias y genera el mismo rendimiento.</div>
+      </div>
+    `,
+    validate: () => true
+  },
+];
+
+function updateOraclePreview(){
+  const el = document.getElementById('oracle-preview');
+  if(!el) return;
+  S.ahorroVoluntario = parseFloat(document.getElementById('ob-voluntario')?.value)||0;
+  const añosTotal = 65 - S.edad;
+  const calc = calcularAforeMensual(S.salario);
+  const aportMensual = calc.totalAfore + S.ahorroVoluntario;
+  const proj = aplicarInteresCompuesto(0, aportMensual, TASA_REAL, añosTotal);
+  const retiro = calcularTasaDeReemplazo(proj.saldoFinal, S.salario);
+  el.innerHTML = `
+    <div class="ic-title">🔭 PROYECCIÓN ESTIMADA A LOS 65 AÑOS</div>
+    <div class="ob-stat-row">
+      <span class="ob-stat-label">Saldo proyectado en AFORE</span>
+      <span class="ob-stat-val">${fmt(proj.saldoFinal)}</span>
+    </div>
+    <div class="ob-stat-row">
+      <span class="ob-stat-label">Pensión mensual estimada</span>
+      <span class="ob-stat-val">${fmt(retiro.pensionMensual)}</span>
+    </div>
+    <div class="ob-stat-row">
+      <span class="ob-stat-label">Tasa de reemplazo</span>
+      <span class="ob-stat-val" style="color:${retiro.tasaReemplazo>=0.7?'var(--green)':retiro.tasaReemplazo>=0.4?'var(--gold-dark)':'var(--red-bright)'}">${pct(retiro.tasaReemplazo)} del salario</span>
+    </div>
+  `;
+}
+
+function startOnboarding(){
+  obStep=0;
+  document.getElementById('cover').classList.add('hidden');
+  document.getElementById('onboarding').classList.remove('hidden');
+  renderOb();
+}
+
+function renderOb(){
+  const step = OB_STEPS[obStep];
+  document.getElementById('ob-era-label').textContent = `PASO ${obStep+1} DE ${OB_STEPS.length}`;
+  let stepsH='';
+  for(let i=0;i<OB_STEPS.length;i++){
+    stepsH+=`<div class="ob-step ${i<obStep?'done':i===obStep?'active':''}"></div>`;
+  }
+  document.getElementById('ob-steps').innerHTML=stepsH;
+  document.getElementById('ob-body').innerHTML=`
+    <div class="ob-section-tag">${step.tag}</div>
+    <div class="ob-h">${step.title}</div>
+    <div class="ob-sh">${step.sub}</div>
+    ${step.render()}
+  `;
+  document.getElementById('ob-back').style.display = obStep>0?'':'none';
+  validateOb();
+  if(obStep===2) setTimeout(updateOraclePreview,100);
+}
+
+function validateOb(){
+  document.getElementById('ob-next').disabled = !OB_STEPS[obStep].validate();
+}
+function obNext(){ if(obStep < OB_STEPS.length-1){ obStep++; renderOb(); } else { startGame(); } }
+function obBack(){ if(obStep>0){ obStep--; renderOb(); } }
+
+// =====================================================
+// GAME INIT
+// =====================================================
+function startGame(){
+  document.getElementById('onboarding').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  S.eraIndex = Math.max(0, ERAS.findIndex(e => S.edad < e.endAge));
+  if(S.eraIndex < 0) S.eraIndex = 0;
+  S.edad = Math.max(S.edad, ERAS[S.eraIndex].startAge);
+  if(S.edad > 25){
+    const añosPrevios = S.edad - 25;
+    const calc = calcularAforeMensual(S.salario * 0.8);
+    const prevProj = aplicarInteresCompuesto(0, calc.totalAfore, TASA_REAL, añosPrevios);
+    S.saldoAfore = prevProj.saldoFinal;
+    S.saldoPrincipal = prevProj.totalAportado;
+    S.semanas = añosPrevios * 52;
+  }
+  renderGame();
+  updateCompoundViz();
+  updateProjection();
+  updateOracle();
+  S.pendingEvent = {
+    ico:'🏁',
+    tag:'INICIO DE SIMULACIÓN',
+    title:`Bienvenido/a, ${S.playerName}`,
+    desc:`Tu simulación AFORE ha comenzado. Con un salario de ${fmt(S.salario)}/mes, el sistema calculará tus aportaciones bajo la Ley 97 del IMSS. La tasa real neta aplicada es del 5.5% anual. Cada periodo representa 5 años de vida laboral.`,
+    impact:`Saldo AFORE actual: ${fmt(S.saldoAfore)}`,
+    pos:true,
+    actions:[{label:'▶ INICIAR', fn:closeModal}]
+  };
+  showEventModal();
+}
+
+// =====================================================
+// RENDER
+// =====================================================
+function fmt(n){ return '$'+Math.round(n).toLocaleString('es-MX'); }
+function pct(n){ return Math.round(n*100)+'%'; }
+
+function renderGame(){
+  const era = ERAS[S.eraIndex];
+  const calc = calcularAforeMensual(S.salario);
+  const disponible = S.salario - calc.totalDescuento - S.ahorroVoluntario;
+  const maxAfore = S.salario * 600;
+
+  document.getElementById('hud-era').textContent = `PERIODO ${toRoman(S.eraIndex+1)} · ${S.edad} AÑOS`;
+  document.getElementById('hud-oro').textContent = fmt(disponible);
+  document.getElementById('hud-oro').className = 'hud-res-val' + (disponible < S.salario*0.3?' low':'');
+  document.getElementById('hud-oro-bar').style.width = Math.min(100,disponible/S.salario*100)+'%';
+  document.getElementById('hud-semanas').textContent = Math.round(S.semanas+S.semanasExtra);
+  document.getElementById('hud-sem-bar').style.width = Math.min(100,(S.semanas+S.semanasExtra)/1250*100)+'%';
+  document.getElementById('hud-afore').textContent = fmt(S.saldoAfore);
+  document.getElementById('hud-afore-bar').style.width = Math.min(100,S.saldoAfore/maxAfore*100)+'%';
+  document.getElementById('hud-edad').textContent = S.edad;
+  document.getElementById('hud-edad-bar').style.width = Math.min(100,(S.edad-18)/47*100)+'%';
+
+  document.getElementById('imp-era-title').textContent = `Periodo ${toRoman(S.eraIndex+1)} — ${era.name}`;
+  document.getElementById('imp-era-desc').textContent = era.desc;
+  document.getElementById('imp-salario').textContent = fmt(S.salario);
+  document.getElementById('imp-imss').textContent = `−${fmt(calc.totalDescuento)}`;
+  document.getElementById('imp-disponible').textContent = fmt(disponible);
+  document.getElementById('imp-afore').textContent = fmt(S.saldoAfore);
+
+  let eraGrid = '';
+  ERAS.forEach((e,i) => {
+    const cls = i < S.eraIndex ? 'done' : i === S.eraIndex ? 'active' : 'future';
+    const val = i < S.eraIndex ? '✓' : i === S.eraIndex ? `${S.edad}a` : `${e.startAge}a`;
+    eraGrid += `
+      <div class="era-block ${cls}">
+        <div class="era-block-age">${val}</div>
+        <div class="era-block-name">${e.name}</div>
+        <div class="era-block-val">Periodo ${toRoman(i+1)}</div>
+      </div>
+    `;
+  });
+  document.getElementById('era-timeline-grid').innerHTML = eraGrid;
+
+  let contribH = '';
+  calc.desglose.forEach(d => {
+    contribH += `
+      <div class="contrib-row">
+        <span class="contrib-label">${d.label}</span>
+        <span class="contrib-val ${d.esAfore?'':'deduction'}">${d.esAfore?'🏦 ':'💳 '}${fmt(d.val)}/mes</span>
+      </div>
+    `;
+  });
+  contribH += `
+    <div class="contrib-row" style="border-top:2px solid rgba(0,107,68,0.3);margin-top:4px;padding-top:12px">
+      <span class="contrib-label" style="color:var(--green-dark);font-weight:700">TOTAL MENSUAL → TU AFORE</span>
+      <span class="contrib-val total">${fmt(calc.totalAfore)}/mes</span>
+    </div>
+  `;
+  document.getElementById('contrib-rows').innerHTML = contribH;
+
+  const isLastEra = S.eraIndex >= ERAS.length - 1;
+  const btnAdv = document.getElementById('btn-advance');
+  if(isLastEra){
+    btnAdv.textContent = '🔭 CALCULAR PENSIÓN — RETIRO A LOS 65 AÑOS';
+    btnAdv.onclick = checkRetirement;
+  } else {
+    btnAdv.textContent = `▶ AVANZAR A PERIODO ${toRoman(S.eraIndex+2)} (+5 AÑOS)`;
+    btnAdv.onclick = advanceEra;
+  }
+}
+
+// =====================================================
+// ADVANCE ERA
+// =====================================================
+function advanceEra(){
+  const era = ERAS[S.eraIndex];
+  const calc = calcularAforeMensual(S.salario);
+  const tasaEra = TASA_REAL + (S.tasaEraBonus || 0);
+  const aportMensual = calc.totalAfore + S.ahorroVoluntario;
+  const proj = aplicarInteresCompuesto(S.saldoAfore, aportMensual, tasaEra, 5);
+  const saldoAntes = S.saldoAfore;
+  S.saldoAfore = proj.saldoFinal;
+  S.saldoPrincipal += proj.totalAportado;
+  S.semanas += 5 * 52;
+  S.eraIndex++;
+  S.edad = ERAS[S.eraIndex] ? ERAS[S.eraIndex].startAge : 65;
+  S.tasaEraBonus = 0;
+  S.bonusPatronal = 0;
+  S.salario *= 1.03;
+
+  const evt = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+  const impactoText = evt.impact(S);
+  S.eventos.unshift({ico:evt.ico,tag:evt.tag,title:evt.title,desc:evt.desc,impact:impactoText,pos:evt.type==='pos'});
+  S.historialAfore.push({era:S.eraIndex,saldo:S.saldoAfore,principal:S.saldoPrincipal});
+
+  renderGame();
+  updateCompoundViz();
+  updateProjection();
+  updateOracle();
+  updateEventsLog();
+
+  const _evt = evt;
+  const _impactoText = impactoText;
+  S.pendingEvent = {
+    ico:'📊',
+    tag:`FIN DE PERIODO ${toRoman(S.eraIndex)} — REPORTE`,
+    title:`Periodo Completado: ${era.name}`,
+    desc:`Han transcurrido 5 años. Tu AFORE creció ${fmt(S.saldoAfore - saldoAntes)} en este periodo con una tasa real del ${pct(tasaEra)} anual. El interés compuesto ya acumula rendimientos sobre rendimientos.`,
+    impact:`Nuevo saldo AFORE: ${fmt(S.saldoAfore)}`,
+    pos:true,
+  };
+  S._pendingNextEvent = {evt: _evt, impacto: _impactoText};
+  showEventModal();
+}
+
+function showRandomEvent(evt, impacto){
+  S.pendingEvent = {
+    ico:evt.ico,
+    tag:evt.tag + ' — EVENTO DEL PERIODO',
+    title:evt.title,
+    desc:evt.desc,
+    impact:impacto,
+    pos:evt.type==='pos',
+    actions:[{label:'▶ ENTENDIDO', fn:closeModal}]
+  };
+  showEventModal();
+}
+
+// =====================================================
+// RETIREMENT
+// =====================================================
+function checkRetirement(){
+  const calc = calcularAforeMensual(S.salario);
+  const tasaEra = TASA_REAL + (S.tasaEraBonus || 0);
+  const aportMensual = calc.totalAfore + S.ahorroVoluntario;
+  const proj = aplicarInteresCompuesto(S.saldoAfore, aportMensual, tasaEra, 5);
+  S.saldoAfore = proj.saldoFinal;
+  S.semanas += 5 * 52;
+  S.edad = 65;
+  S.gameOver = true;
+
+  const retiro = calcularTasaDeReemplazo(S.saldoAfore, S.salario);
+  const semanasTotal = Math.round(S.semanas + S.semanasExtra);
+  const calificaMinima = semanasTotal >= 1250;
+
+  setTimeout(()=>{
+    document.getElementById('game').classList.add('hidden');
+    const go = document.getElementById('gameover');
+    go.classList.remove('hidden');
+    document.getElementById('go-icon').textContent = retiro.icon;
+    document.getElementById('go-title').textContent =
+      retiro.tipo==='victory' ? '¡Retiro Exitoso!' :
+      retiro.tipo==='warning' ? 'Retiro con Recursos Limitados' :
+      'Alerta: Pensión Insuficiente';
+    document.getElementById('go-title').className = `go-title ${retiro.tipo==='victory'?'victory':'defeat'}`;
+    let desc = retiro.veredicto;
+    if(!calificaMinima) desc = `⚠️ Solo acumulaste ${semanasTotal} semanas cotizadas. Se requieren 1,250 mínimo para acceder a la pensión garantizada IMSS. En ese caso, solo recibirías el saldo de tu AFORE en modalidad de retiro programado hasta agotarse. — ${desc}`;
+    document.getElementById('go-desc').textContent = desc;
+    document.getElementById('go-stats').innerHTML = `
+      <div class="go-stat-row"><span class="go-stat-key">Saldo Final AFORE</span><span class="go-stat-val pos">${fmt(S.saldoAfore)}</span></div>
+      <div class="go-stat-row"><span class="go-stat-key">Pensión Mensual Estimada</span><span class="go-stat-val ${retiro.tasaReemplazo>=0.4?'pos':'neg'}">${fmt(retiro.pensionMensual)}</span></div>
+      <div class="go-stat-row"><span class="go-stat-key">Tasa de Reemplazo</span><span class="go-stat-val ${retiro.tasaReemplazo>=0.7?'pos':retiro.tasaReemplazo>=0.4?'':'neg'}">${pct(retiro.tasaReemplazo)} del último salario</span></div>
+      <div class="go-stat-row"><span class="go-stat-key">Semanas Cotizadas</span><span class="go-stat-val ${calificaMinima?'pos':'neg'}">${semanasTotal} sem. ${calificaMinima?'✓ Califica':'✗ Insuficiente'}</span></div>
+      <div class="go-stat-row"><span class="go-stat-key">Último Salario Mensual</span><span class="go-stat-val">${fmt(S.salario)}</span></div>
+      <div class="go-stat-row"><span class="go-stat-key">Ahorro Voluntario Acum.</span><span class="go-stat-val pos">${fmt(S.ahorroVoluntario*12*40)}</span></div>
+    `;
+  }, 200);
+}
+
+// =====================================================
+// COMPOUND VIZ
+// =====================================================
+function updateCompoundViz(){
+  const calc = calcularAforeMensual(S.salario);
+  const aportMensual = calc.totalAfore + S.ahorroVoluntario;
+  let saldo = 0, principal = 0;
+  const dataPoints = [];
+  for(let era=0; era<8; era++){
+    const proj = aplicarInteresCompuesto(saldo, aportMensual, TASA_REAL, 5);
+    saldo = proj.saldoFinal;
+    principal += proj.totalAportado;
+    dataPoints.push({saldo, principal, rend:saldo-principal});
+  }
+  const maxSaldo = dataPoints[7].saldo;
+  let html = '';
+  dataPoints.forEach((d,i)=>{
+    const totalPct = Math.round((d.saldo/maxSaldo)*90)+10;
+    const principalPct = Math.round((d.principal/d.saldo)*totalPct);
+    const rendPct = totalPct - principalPct;
+    html += `
+      <div class="compound-bar-wrap">
+        <div style="display:flex;flex-direction:column;align-items:center;width:100%;height:100px;justify-content:flex-end">
+          <div class="compound-bar" style="height:${rendPct}%"></div>
+          <div class="compound-bar principal-portion" style="height:${principalPct}%"></div>
+        </div>
+        <div class="compound-bar-label">P${i+1}</div>
+      </div>
+    `;
+  });
+  document.getElementById('compound-bars').innerHTML = html;
+
+  const aportMensualTotal = aportMensual;
+  const eraProj = aplicarInteresCompuesto(S.saldoAfore, aportMensualTotal, TASA_REAL, 5);
+  document.getElementById('vol-por-era').textContent = fmt(aportMensualTotal * 60);
+  document.getElementById('vol-rend').textContent = fmt(eraProj.totalRendimientos);
+  document.getElementById('vol-total-era').textContent = fmt(eraProj.saldoFinal);
+}
+
+function updateVolSlider(){
+  const val = parseFloat(document.getElementById('vol-slider').value)||0;
+  S.ahorroVoluntario = val;
+  document.getElementById('vol-val').textContent = fmt(val);
+  updateCompoundViz();updateProjection();updateOracle();renderGame();
+}
+function updateTasaSlider(){
+  const val = parseFloat(document.getElementById('vol-tasa').value)/100;
+  S.tasaVoluntaria = val;
+  document.getElementById('vol-tasa-val').textContent = (val*100).toFixed(1)+'%';
+  updateCompoundViz();
+}
+
+// =====================================================
+// PROJECTION
+// =====================================================
+function updateProjection(){
+  const calc = calcularAforeMensual(S.salario);
+  const aportMensual = calc.totalAfore + S.ahorroVoluntario;
+  let saldo = S.saldoAfore;
+  let html = '';
+  ERAS.forEach((era,i) => {
+    const isCurrentOrFuture = i >= S.eraIndex;
+    const aportSim = isCurrentOrFuture ? aportMensual : calc.totalAfore;
+    const proj = aplicarInteresCompuesto(saldo, aportSim, TASA_REAL, 5);
+    const isActive = i === S.eraIndex;
+    html += `
+      <tr class="${isActive?'highlight-row':''}">
+        <td>${era.name}</td>
+        <td>${era.startAge}–${era.endAge}</td>
+        <td class="val-gold">${fmt(saldo)}</td>
+        <td>${fmt(aportSim*60)}</td>
+        <td class="val-green">+${fmt(proj.totalRendimientos)}</td>
+        <td class="val-gold">${fmt(proj.saldoFinal)}</td>
+      </tr>
+    `;
+    saldo = proj.saldoFinal;
+  });
+  document.getElementById('proj-body').innerHTML = html;
+}
+
+// =====================================================
+// ORACLE
+// =====================================================
+function updateOracle(){
+  const calc = calcularAforeMensual(S.salario);
+  const aportMensual = calc.totalAfore + S.ahorroVoluntario;
+  const añosRestantes = 65 - S.edad;
+  const proj = aplicarInteresCompuesto(S.saldoAfore, aportMensual, TASA_REAL, añosRestantes);
+  const retiro = calcularTasaDeReemplazo(proj.saldoFinal, S.salario);
+
+  document.getElementById('or-saldo-final').textContent = fmt(proj.saldoFinal);
+  document.getElementById('or-pension').textContent = fmt(retiro.pensionMensual);
+  document.getElementById('or-tasa-reemplazo').textContent = pct(retiro.tasaReemplazo);
+  document.getElementById('or-tasa-reemplazo').style.color =
+    retiro.tasaReemplazo>=0.7?'var(--green)':retiro.tasaReemplazo>=0.4?'var(--gold-dark)':'var(--red-bright)';
+
+  document.getElementById('oracle-content').innerHTML = `
+    <div class="oracle-verdict ${retiro.tipo}">${retiro.veredicto}</div>
+    <div style="margin-top:12px">
+      <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue-dark);margin-bottom:8px;letter-spacing:1.5px">INDICADOR DE TASA DE REEMPLAZO</div>
+      <div style="background:var(--gray-100);height:20px;border:1px solid var(--border);border-radius:3px;position:relative;overflow:hidden">
+        <div style="height:100%;width:${Math.min(100,retiro.tasaReemplazo*100)}%;background:linear-gradient(90deg,var(--red-bright),#F59E0B,var(--green-bright));transition:width .8s ease;border-radius:2px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px">
+          <span style="font-family:'Press Start 2P',monospace;font-size:7px;color:#FFFFFF;text-shadow:0 1px 2px rgba(0,0,0,0.4)">${pct(retiro.tasaReemplazo)}</span>
+        </div>
+        <div style="position:absolute;left:70%;top:-1px;bottom:-1px;width:2px;background:var(--green)"></div>
+        <div style="position:absolute;left:40%;top:-1px;bottom:-1px;width:2px;background:#F59E0B"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--red-bright)">Crítico</span>
+        <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#B45309">40% mín.</span>
+        <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--green)">70% OCDE</span>
+      </div>
+    </div>
+    <div class="ob-info-card" style="margin-top:12px">
+      <div class="ic-title">PARA ALCANZAR 70% DE REEMPLAZO</div>
+      <div class="ob-stat-row">
+        <span class="ob-stat-label">Ahorro voluntario requerido</span>
+        <span class="ob-stat-val">${calcularVoluntarioNecesario()}</span>
+      </div>
+      <div class="ob-stat-row">
+        <span class="ob-stat-label">Años restantes hasta el retiro</span>
+        <span class="ob-stat-val">${añosRestantes} años</span>
+      </div>
+    </div>
+  `;
+}
+
+function calcularVoluntarioNecesario(){
+  const calc = calcularAforeMensual(S.salario);
+  const añosRestantes = 65 - S.edad;
+  for(let v=0; v<=20000; v+=100){
+    const aportMensual = calc.totalAfore + v;
+    const proj = aplicarInteresCompuesto(S.saldoAfore, aportMensual, TASA_REAL, añosRestantes);
+    const retiro = calcularTasaDeReemplazo(proj.saldoFinal, S.salario);
+    if(retiro.tasaReemplazo >= 0.7) return fmt(v)+'/mes';
+  }
+  return 'Supera el límite simulado';
+}
+
+// =====================================================
+// EVENTS
+// =====================================================
+function updateEventsLog(){
+  const entries = document.getElementById('events-entries');
+  const newEntries = S.eventos.slice(0,10).map(e=>`
+    <div class="event-entry">
+      <div class="event-icon">${e.ico}</div>
+      <div class="event-body">
+        <div class="event-title">${e.title}</div>
+        <div class="event-desc">${e.desc}</div>
+        <div class="event-tag ${e.pos?'pos':'neg'}">${e.tag||'EVENTO'}</div>
+        <div class="event-desc" style="margin-top:4px;color:var(--green-dark);font-weight:500">${e.impact}</div>
+      </div>
+    </div>
+  `).join('');
+  entries.innerHTML = newEntries + entries.innerHTML;
+}
+
+// =====================================================
+// MODAL
+// =====================================================
+function showEventModal(){
+  const ev = S.pendingEvent;
+  if(!ev) return;
+  document.getElementById('ev-tag').textContent = ev.tag || 'EVENTO DEL PERIODO';
+  document.getElementById('ev-icon').textContent = ev.ico;
+  document.getElementById('ev-title').textContent = ev.title;
+  document.getElementById('ev-desc').textContent = ev.desc;
+  document.getElementById('ev-impact').textContent = ev.impact;
+  document.getElementById('ev-impact').style.color = ev.pos ? 'var(--green-dark)' : 'var(--red-bright)';
+  const actionsEl = document.getElementById('ev-actions');
+  if(ev.actions && ev.actions.length){
+    actionsEl.innerHTML = ev.actions.map((a,i)=>`
+      <button class="btn-modal ${a.danger?'danger':''}" onclick="modalAction(${i})">${a.label}</button>
+    `).join('');
+  } else {
+    actionsEl.innerHTML = `<button class="btn-modal" onclick="closeModal()">▶ ENTENDIDO</button>`;
+  }
+  document.getElementById('ev-modal').classList.remove('hidden');
+}
+
+function modalAction(i){
+  const ev = S.pendingEvent;
+  if(ev && ev.actions && ev.actions[i]){
+    ev.actions[i].fn();
+  } else {
+    closeModal();
+  }
+}
+
+function closeModal(){
+  document.getElementById('ev-modal').classList.add('hidden');
+  S.pendingEvent = null;
+  if(S._pendingNextEvent){
+    const {evt, impacto} = S._pendingNextEvent;
+    S._pendingNextEvent = null;
+    showRandomEvent(evt, impacto);
+  }
+}
+
+// =====================================================
+// TABS
+// =====================================================
+function showTab(tab){
+  ['imperio','afore','proyeccion','oraculo','cronicas'].forEach(t=>{
+    document.getElementById('panel-'+t).classList.toggle('hidden',t!==tab);
+    document.getElementById('tab-'+t).classList.toggle('act',t===tab);
+  });
+  S.activeTab = tab;
+  if(tab==='afore') updateCompoundViz();
+  if(tab==='proyeccion') updateProjection();
+  if(tab==='oraculo') updateOracle();
+}
+
+// =====================================================
+// UTILS
+// =====================================================
+function toRoman(n){
+  const r=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+  return r[n-1]||n;
+}
+function restart(){
+  document.getElementById('gameover').classList.add('hidden');
+  initState();
+  document.getElementById('cover').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
